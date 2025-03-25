@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.project.cmpt371.controllers.MainMenuController"
+      alignment="CENTER"
+      spacing="20"
+      style="-fx-padding: 20;">
+
+    <Text text="Team Box Conquest" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+    <Button text="Create Game" onAction="#onCreateGame" style="-fx-min-width: 200px;"/>
+    <Button text="Join Game" onAction="#onJoinGame" style="-fx-min-width: 200px;"/>
+    <Button text="Settings" onAction="#onSettings" style="-fx-min-width: 200px;"/>
+    <Button text="Exit" onAction="#onExit" style="-fx-min-width: 200px;"/>
+</VBox>
