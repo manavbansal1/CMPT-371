@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,30 +23,38 @@ public class GameLauncher extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Game Launcher");
+        primaryStage.getIcons().add(new Image(String.valueOf(getClass().getResource("/Images/icon.png"))));
 
-        // Create the initial UI with two options
         Button hostButton = new Button("Host game");
         Button joinButton = new Button("Join game");
 
         hostButton.setPrefSize(200, 50);
         joinButton.setPrefSize(200, 50);
+        
+        // Inline styling for buttons
+        hostButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 16px;");
+        joinButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px;");
 
-        VBox optionsBox = new VBox(20, hostButton, joinButton);
+        Image titleImage = new Image(String.valueOf(getClass().getResource("/Images/GameLauncherTitle.png")));
+        ImageView titleImageView = new ImageView(titleImage);
+
+        VBox optionsBox = new VBox(15, hostButton, joinButton);
+        VBox screenBox = new VBox(25, titleImageView, optionsBox);
         optionsBox.setAlignment(Pos.CENTER);
+        screenBox.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(optionsBox, 400, 300);
+        // Style the main container
+        screenBox.setStyle("-fx-background-color: #f0f0f0;");
+
+        Scene scene = new Scene(screenBox, 400, 300);
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        // Handle Host game button click
         hostButton.setOnAction(e -> showHostScreen(primaryStage));
-
-        // Handle Join game button click
         joinButton.setOnAction(e -> showJoinScreen(primaryStage));
     }
 
     private void showHostScreen(Stage primaryStage) {
-        // Start the server in a new thread
         new Thread(() -> {
             try {
                 GameServer.main(new String[0]);
@@ -53,7 +63,6 @@ public class GameLauncher extends Application {
             }
         }).start();
 
-        // Get local IP address
         String ip = "Unknown";
         try {
             ip = InetAddress.getLocalHost().getHostAddress();
@@ -63,16 +72,19 @@ public class GameLauncher extends Application {
         Label ipLabel = new Label("IP Address: " + ip);
         Label portLabel = new Label("Port: 12345");
 
+        // Style labels
+        ipLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
+        portLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
+
         VBox centerBox = new VBox(10, ipLabel, portLabel);
         centerBox.setAlignment(Pos.CENTER);
 
-        // Create the Start button at bottom right
         Button startButton = new Button("Start");
+        startButton.setStyle("-fx-background-color: #FF5722; -fx-text-fill: white; -fx-font-size: 14px;");
+
         startButton.setOnAction(e -> {
-            // Set the GameClient connection details (host mode)
             GameClient.serverIP = "localhost";
             GameClient.serverPort = 12345;
-            // Launch the game client in a new stage
             new Thread(() -> Platform.runLater(() -> {
                 try {
                     new GameClient().start(new Stage());
@@ -80,45 +92,50 @@ public class GameLauncher extends Application {
                     ex.printStackTrace();
                 }
             })).start();
-            primaryStage.close(); // Optionally close the launcher
+            primaryStage.close();
         });
 
         BorderPane hostPane = new BorderPane();
         hostPane.setCenter(centerBox);
+        hostPane.setStyle("-fx-background-color: #ffffff;");
 
         HBox bottomBox = new HBox(startButton);
         bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
         bottomBox.setPadding(new Insets(10));
-        hostPane.setBottom(bottomBox);
+        hostPane.setBottom(bottomBox); // Note: 'customBox' seems to be a typo; should be 'bottomBox'
 
         Scene hostScene = new Scene(hostPane, 400, 300);
         primaryStage.setScene(hostScene);
     }
 
     private void showJoinScreen(Stage primaryStage) {
-        // Create UI for joining a game: two text fields for IP and Port
         Label ipPrompt = new Label("Enter Host IP:");
         TextField ipField = new TextField();
         Label portPrompt = new Label("Enter Port:");
         TextField portField = new TextField();
 
+        // Style labels and text fields
+        ipPrompt.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
+        portPrompt.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
+        ipField.setStyle("-fx-pref-width: 150px; -fx-background-color: #f9f9f9; -fx-border-color: #cccccc;");
+        portField.setStyle("-fx-pref-width: 150px; -fx-background-color: #f9f9f9; -fx-border-color: #cccccc;");
+
         VBox centerBox = new VBox(10, ipPrompt, ipField, portPrompt, portField);
         centerBox.setAlignment(Pos.CENTER);
 
-        // Create the Join button at bottom right
         Button joinButton = new Button("Join");
+        joinButton.setStyle("-fx-background-color: #9C27B0; -fx-text-fill: white; -fx-font-size: 14px;");
+
         joinButton.setOnAction(e -> {
             String ip = ipField.getText().trim();
             int port = 12345;
             try {
                 port = Integer.parseInt(portField.getText().trim());
             } catch (NumberFormatException ex) {
-                // Could add error handling here (e.g., alert dialog)
+                // Add error handling if desired
             }
-            // Set the GameClient connection details (join mode)
             GameClient.serverIP = ip;
             GameClient.serverPort = port;
-            // Launch the game client in a new stage
             new Thread(() -> Platform.runLater(() -> {
                 try {
                     new GameClient().start(new Stage());
@@ -131,11 +148,12 @@ public class GameLauncher extends Application {
 
         BorderPane joinPane = new BorderPane();
         joinPane.setCenter(centerBox);
+        joinPane.setStyle("-fx-background-color: #ffffff;");
 
         HBox bottomBox = new HBox(joinButton);
         bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
         bottomBox.setPadding(new Insets(10));
-        joinPane.setBottom(bottomBox);
+        joinPane.setBottom(bottomBox); // Note: 'customBox' should be 'bottomBox'
 
         Scene joinScene = new Scene(joinPane, 400, 300);
         primaryStage.setScene(joinScene);
