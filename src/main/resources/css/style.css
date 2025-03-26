@@ -1,0 +1,84 @@
+/* Root styles for consistent background and text */
+.root {
+    -fx-background-color: #2E2E2E; /* Dark gray background */
+    -fx-text-fill: #FFFFFF; /* White text for contrast */
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #87CEEB; /* Sky blue */
+    -fx-text-fill: #2E2E2E; /* Dark gray text */
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #ADD8E6; /* Lighter sky blue on hover */
+}
+
+.button:pressed {
+    -fx-background-color: #4682B4; /* Darker blue when pressed */
+}
+
+/* Specific button styles */
+#hostButton, #joinButton, #startButton, #joinGameButton {
+    -fx-pref-width: 200px;
+    -fx-pref-height: 50px;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #FFFFFF; /* White text */
+    -fx-font-size: 14px;
+}
+
+/* Text Fields */
+.text-field {
+    -fx-background-color: #3C3C3C; /* Slightly lighter dark gray */
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #A9A9A9; /* Gray prompt text */
+    -fx-border-color: #87CEEB; /* Sky blue border */
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+}
+
+/* Text Areas (e.g., team lists, chat) */
+.text-area {
+    -fx-background-color: #3C3C3C;
+    -fx-text-fill: #FFFFFF;
+    -fx-control-inner-background: #3C3C3C;
+    -fx-border-color: #87CEEB;
+    -fx-border-radius: 5px;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-color: #3C3C3C;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #87CEEB;
+    -fx-border-radius: 5px;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #3C3C3C;
+    -fx-text-fill: #FFFFFF;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #87CEEB;
+    -fx-text-fill: #2E2E2E;
+}
+
+/* GridPane (optional styling for grid borders) */
+.grid-pane {
+    -fx-background-color: #2E2E2E;
+}
+
+/* Text (e.g., game info, team scores) */
+.text {
+    -fx-fill: #FFFFFF; /* White text for JavaFX Text nodes */
+    -fx-font-size: 16px;
+}
