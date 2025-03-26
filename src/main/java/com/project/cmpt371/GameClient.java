@@ -1,4 +1,4 @@
-package com.project.cmpt371;
+package com.example.demo;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -55,6 +55,9 @@ public class GameClient extends Application {
         System.out.println("Client " + playerName + " connected to " + serverIP + ":" + serverPort + " from local port " + socket.getLocalPort());
         inputStream = new DataInputStream(socket.getInputStream());
         outputStream = new DataOutputStream(socket.getOutputStream());
+        primaryStage.setWidth(1100);
+        primaryStage.setHeight(1040);
+        primaryStage.setFullScreen(true);
 
         // Set up preliminary UI - waiting for server confirmation
         setupUI();
@@ -72,6 +75,7 @@ public class GameClient extends Application {
         gridPane = new GridPane();
         gridPane.setVgap(5);
         gridPane.setHgap(5);
+        gridPane.getStyleClass().add("grid-pane");
 
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
@@ -106,14 +110,35 @@ public class GameClient extends Application {
         // Center: Game Info and Grid
         gameInfo = new Text("Connecting to server, please wait...");
         gameInfo.setId("gameInfo");
-        VBox centerBox = new VBox(15, gameInfo, gridPane);
+
+        // Create a container to center the grid and control its size
+        StackPane gridContainer = new StackPane(gridPane);
+        gridContainer.getStyleClass().add("grid-container");
+        gridContainer.setMaxWidth(600);
+        gridContainer.setMaxHeight(600);
+        gridContainer.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        gridContainer.setPrefHeight(Region.USE_COMPUTED_SIZE);
+
+        VBox centerBox = new VBox(15, gameInfo, gridContainer);
         centerBox.setAlignment(Pos.CENTER);
+        centerBox.setPrefWidth(Region.USE_COMPUTED_SIZE);
 
         // Right: Team Lists and Leave Button
-        teamAList = new TextArea("Red Team:\n");
+        // Add team list headers
+        Label teamAHeader = new Label("Red Team");
+        teamAHeader.getStyleClass().add("team-header");
+
+        Label teamBHeader = new Label("Blue Team");
+        teamBHeader.getStyleClass().add("team-header");
+
+        teamAList = new TextArea();
         teamAList.setEditable(false);
-        teamBList = new TextArea("Blue Team:\n");
+        teamAList.getStyleClass().add("team-a-list");
+
+        teamBList = new TextArea();
         teamBList.setEditable(false);
+        teamBList.getStyleClass().add("team-b-list");
+
         Button leaveButton = new Button("Leave Game");
         leaveButton.setOnAction(e -> {
             isRunning = false;
@@ -124,14 +149,24 @@ public class GameClient extends Application {
                 ex.printStackTrace();
             }
         });
-        VBox rightBox = new VBox(15, teamAList, teamBList, leaveButton);
-        rightBox.setAlignment(Pos.CENTER);
+
+        VBox teamASection = new VBox(5, teamAHeader, teamAList);
+        VBox teamBSection = new VBox(5, teamBHeader, teamBList);
+
+        VBox rightBox = new VBox(15, teamASection, teamBSection, leaveButton);
+        rightBox.setAlignment(Pos.TOP_CENTER);
         rightBox.setPadding(new Insets(15));
+        rightBox.setPrefWidth(200);
+        rightBox.setMaxWidth(200);
 
         // Bottom: Chat
+        Label chatLabel = new Label("Chat");
+        chatLabel.getStyleClass().add("chat-header");
+
         chatArea = new TextArea();
         chatArea.setId("chatArea");
         chatArea.setEditable(false);
+
         chatInput = new TextField();
         chatInput.setPromptText("Type a message...");
         chatInput.setOnAction(e -> {
@@ -146,8 +181,10 @@ public class GameClient extends Application {
                 }
             }
         });
-        VBox chatBox = new VBox(10, chatArea, chatInput);
+
+        VBox chatBox = new VBox(10, chatLabel, chatArea, chatInput);
         chatBox.setPadding(new Insets(15));
+        chatBox.setMaxHeight(200);
 
         // Main Layout
         BorderPane root = new BorderPane();
@@ -337,12 +374,20 @@ public class GameClient extends Application {
                     String teamA = parts[1];
                     String teamB = parts[2];
                     Platform.runLater(() -> {
-                        teamAList.setText("Red Team:\n" + (teamA.isEmpty() ? "" : teamA.replace(",", "\n")));
-                        teamBList.setText("Blue Team:\n" + (teamB.isEmpty() ? "" : teamB.replace(",", "\n")));
+                        // Format player names with bold styling
+                        String formattedTeamA = formatTeamList(teamA, "Red");
+                        String formattedTeamB = formatTeamList(teamB, "Blue");
+
+                        teamAList.setText(formattedTeamA);
+                        teamBList.setText(formattedTeamB);
                     });
                 } else if (message.startsWith("CHAT")) {
                     String chatMsg = message.substring(5);
-                    Platform.runLater(() -> chatArea.appendText(chatMsg + "\n"));
+                    Platform.runLater(() -> {
+                        // Format chat messages with appropriate styling
+                        String formattedMsg = formatChatMessage(chatMsg);
+                        chatArea.appendText(formattedMsg + "\n");
+                    });
                 } else if (message.startsWith("HOLD_INFO")) {
                     String[] parts = message.split(" ");
                     int row = Integer.parseInt(parts[1]);
@@ -378,6 +423,36 @@ public class GameClient extends Application {
         }
     }
 
+    // Helper method to format team player lists
+    private String formatTeamList(String teamList, String teamName) {
+        if (teamList.isEmpty()) {
+            return "";
+        }
+
+        String[] players = teamList.split(",");
+        StringBuilder sb = new StringBuilder();
+
+        for (String player : players) {
+            // Add special formatting for the current player
+            if (player.equals(playerName)) {
+                sb.append(player).append(" (You)\n");
+            } else {
+                sb.append(player).append("\n");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    // Helper method to format chat messages
+    private String formatChatMessage(String message) {
+        // You could add styling based on who sent the message
+        if (message.startsWith(playerName)) {
+            return message + " (You)";
+        }
+        return message;
+    }
+
     private void showWinScreen(String winner) {
         Color backgroundColor = winner.equals("TEAM_A") ? Color.rgb(255, 85, 85, 0.9) :
                 winner.equals("TEAM_B") ? Color.rgb(85, 85, 255, 0.9) :
@@ -386,6 +461,7 @@ public class GameClient extends Application {
 
         VBox winBox = new VBox(25);
         winBox.setAlignment(Pos.CENTER);
+        winBox.getStyleClass().add("win-screen");
         winBox.setBackground(new Background(new BackgroundFill(backgroundColor, null, null)));
 
         Text heading = new Text(headingText);

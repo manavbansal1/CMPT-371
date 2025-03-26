@@ -1,4 +1,4 @@
-package com.project.cmpt371;
+package com.example.demo;
 
 import javafx.application.Application;
 import javafx.application.Platform;

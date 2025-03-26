@@ -1,4 +1,4 @@
-package com.project.cmpt371;
+package com.example.demo;
 
 import java.io.*;
 import java.net.*;

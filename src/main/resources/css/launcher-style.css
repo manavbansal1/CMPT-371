@@ -1,82 +1,154 @@
 /* Root styles */
 .root {
-    -fx-background-color: #1E1E1E; /* Darker gray for modern feel */
-    -fx-font-family: "Segoe UI", sans-serif; /* Modern font */
+    -fx-background-color: #1E1E1E; /* Dark background for modern feel */
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+}
+
+/* Scene size and responsiveness */
+Scene {
+    -fx-min-width: 450px;
+    -fx-min-height: 400px;
+    -fx-pref-width: 450px;
+    -fx-pref-height: 400px;
 }
 
 /* Buttons */
 .button {
-    -fx-background-color: #87CEEB; /* Sky blue */
-    -fx-text-fill: #1E1E1E; /* Dark gray text */
+    -fx-background-color: #4095c6; /* More professional blue */
+    -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-padding: 8px 16px; /* Smaller padding for compact buttons */
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2); /* Subtle shadow */
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0, 0, 1);
     -fx-cursor: hand;
-    -fx-transition: all 0.2s ease; /* Smooth transition */
 }
 
 .button:hover {
-    -fx-background-color: #ADD8E6; /* Lighter sky blue */
-    -fx-scale-x: 1.05; /* Slight growth */
-    -fx-scale-y: 1.05;
+    -fx-background-color: #57a9d7;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 5, 0, 0, 2);
+    -fx-translate-y: -1px;
+    -fx-transition: all 0.2s ease;
 }
 
 .button:pressed {
-    -fx-background-color: #4682B4; /* Darker blue */
-    -fx-scale-x: 0.98; /* Slight shrink on press */
-    -fx-scale-y: 0.98;
+    -fx-background-color: #3685b3;
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0, 0, 0);
 }
 
-/* Specific button sizes */
+/* Specific button styles */
 #hostButton, #joinButton, #startButton, #joinGameButton {
-    -fx-pref-width: 150px; /* Smaller than original 200px */
-    -fx-pref-height: 40px; /* Smaller than original 50px */
+    -fx-pref-width: 180px;
+    -fx-pref-height: 40px;
+    -fx-min-width: 120px;
+    -fx-max-width: 220px;
 }
 
 /* Labels */
 .label {
-    -fx-text-fill: #E0E0E0; /* Light gray for readability */
+    -fx-text-fill: #e8e8e8;
     -fx-font-size: 14px;
     -fx-font-weight: normal;
+    -fx-padding: 5px 0;
 }
 
-/* Text Fields */
+/* Text Fields - modern, centered appearance */
 .text-field {
-    -fx-background-color: #2A2A2A; /* Darker input background */
-    -fx-text-fill: #E0E0E0;
-    -fx-prompt-text-fill: #A0A0A0; /* Subtle prompt */
-    -fx-border-color: #87CEEB;
-    -fx-border-width: 1px;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-padding: 6px;
-    -fx-font-size: 13px;
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #aaaaaa;
+    -fx-border-color: #4095c6;
+    -fx-border-width: 0 0 2px 0; /* Bottom border only for modern look */
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+    -fx-padding: 8px 10px;
+    -fx-font-size: 14px;
+    -fx-alignment: center; /* Center text in the field */
+    -fx-pref-width: 280px;
+    -fx-max-width: 350px;
+    -fx-min-width: 200px;
 }
 
-/* ComboBox */
+.text-field:focused {
+    -fx-background-color: #353535;
+    -fx-border-color: #57a9d7;
+}
+
+/* ComboBox - modernized */
 .combo-box {
-    -fx-background-color: #2A2A2A;
-    -fx-text-fill: #E0E0E0;
-    -fx-border-color: #87CEEB;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: white;
+    -fx-border-color: #4095c6;
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+    -fx-pref-width: 280px;
+    -fx-max-width: 350px;
+    -fx-min-width: 200px;
 }
 
 .combo-box .list-cell {
-    -fx-background-color: #2A2A2A;
-    -fx-text-fill: #E0E0E0;
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: white;
+    -fx-padding: 8px 10px;
+}
+
+.combo-box .list-view {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #4095c6;
+    -fx-border-width: 1px;
 }
 
 .combo-box .list-cell:hover {
-    -fx-background-color: #87CEEB;
-    -fx-text-fill: #1E1E1E;
+    -fx-background-color: #4095c6;
+    -fx-text-fill: white;
 }
 
-/* VBox and HBox for layout */
-.vbox, .hbox {
+.combo-box .arrow-button {
     -fx-background-color: transparent;
-    -fx-padding: 10px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #57a9d7;
+}
+
+/* VBox and HBox centering and padding */
+.vbox, .hbox {
+    -fx-alignment: center;
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+}
+
+/* Form container centering */
+VBox > .label, VBox > .text-field, VBox > .combo-box {
+    -fx-alignment: center;
+    -fx-max-width: 280px;
+}
+
+/* Status information styling */
+Label:contains("IP Address:"), Label:contains("Port:"), Label:contains("spots") {
+    -fx-font-size: 14px;
+    -fx-text-fill: #adadad;
+    -fx-padding: 5px;
+    -fx-background-color: rgba(30, 30, 30, 0.8);
+    -fx-background-radius: 5px;
+}
+
+/* Add some padding to the main container */
+.root > .vbox {
+    -fx-padding: 30px 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 400px) {
+    .text-field, .combo-box {
+        -fx-pref-width: 90%;
+    }
+
+    #hostButton, #joinButton, #startButton, #joinGameButton {
+        -fx-pref-width: 90%;
+    }
 }

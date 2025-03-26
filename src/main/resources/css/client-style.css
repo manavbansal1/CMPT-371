@@ -1,180 +1,447 @@
 /* Root styles */
 .root {
-    -fx-background-color: #1E1E1E; /* Darker gray */
+    -fx-background-color: #1A1A1A; /* Darker background for better contrast */
     -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+}
+
+/* Main layout containers */
+.border-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+
+/* Center content in the BorderPane */
+.border-pane .center {
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+/* Fix for the right panel black space issue */
+.border-pane .right {
+    -fx-max-width: 200px;
+    -fx-min-width: 180px;
+    -fx-pref-width: 190px;
+    -fx-spacing: 10;
+    -fx-alignment: top-center;
+    -fx-padding: 10 10 10 0;
 }
 
 /* Buttons */
 .button {
-    -fx-background-color: #87CEEB; /* Sky blue */
-    -fx-text-fill: #1E1E1E;
-    -fx-font-size: 13px;
+    -fx-background-color: #4095c6; /* Professional blue */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-padding: 6px 12px; /* Smaller buttons */
+    -fx-padding: 8px 16px;
     -fx-background-radius: 6px;
     -fx-border-radius: 6px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0, 0, 1);
     -fx-cursor: hand;
-    -fx-transition: all 0.2s ease;
 }
 
 .button:hover {
-    -fx-background-color: #ADD8E6;
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
+    -fx-background-color: #57a9d7;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 5, 0, 0, 2);
+    -fx-translate-y: -1px;
+    -fx-transition: all 0.2s ease;
 }
 
 .button:pressed {
-    -fx-background-color: #4682B4;
-    -fx-scale-x: 0.98;
-    -fx-scale-y: 0.98;
+    -fx-background-color: #3685b3;
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0, 0, 0);
 }
 
-/* Team Score Boxes */
+/* Team Score Boxes - more modern with subtle gradients */
 #redScoreBox {
-    -fx-background-color: #FF5555; /* Red with modern tone */
+    -fx-background-color: linear-gradient(to bottom, #FF5555, #E04040);
     -fx-background-radius: 8px;
-    -fx-padding: 10px;
+    -fx-padding: 12px 20px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 2);
+    -fx-min-width: 120px;
+    -fx-alignment: center;
 }
 
 #blueScoreBox {
-    -fx-background-color: #5555FF; /* Blue with modern tone */
+    -fx-background-color: linear-gradient(to bottom, #5555FF, #4040E0);
     -fx-background-radius: 8px;
-    -fx-padding: 10px;
+    -fx-padding: 12px 20px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 2);
+    -fx-min-width: 120px;
+    -fx-alignment: center;
 }
 
-/* Text inside score boxes */
+/* Score text */
 .text {
-    -fx-fill: #FFFFFF;
-    -fx-font-size: 16px;
+    -fx-fill: white;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 1, 0, 0, 1);
+}
+
+/* Game info text */
+#gameInfo {
+    -fx-fill: #E0E0E0;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
 }
 
 /* Team Lists */
 .text-area {
-    -fx-background-color: #2A2A2A;
-    -fx-text-fill: #E0E0E0;
-    -fx-control-inner-background: #2A2A2A;
-    -fx-border-color: #87CEEB;
+    -fx-background-color: rgba(42, 42, 42, 0.7);
+    -fx-text-fill: #FFFFFF;
+    -fx-control-inner-background: rgba(42, 42, 42, 0.7);
+    -fx-border-color: rgba(64, 149, 198, 0.3);
     -fx-border-width: 1px;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-font-size: 12px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-font-size: 14px;
     -fx-padding: 5px;
-    -fx-pref-width: 120px;
-    -fx-pref-height: 80px; /* Slightly smaller */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1);
+    -fx-pref-width: 180px;
+    -fx-pref-height: 150px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
 }
 
-/* Chat Area */
+/* Add a subtle header for team lists */
+.text-area.team-list-header {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+    -fx-padding: 0;
+    -fx-pref-height: 30px;
+}
+
+/* Custom styling for Red team list */
+teamAList {
+    -fx-background-color: linear-gradient(to bottom, rgba(180, 40, 40, 0.1), rgba(42, 42, 42, 0.7));
+    -fx-border-color: rgba(255, 80, 80, 0.3);
+}
+
+/* Custom styling for Blue team list */
+teamBList {
+    -fx-background-color: linear-gradient(to bottom, rgba(40, 40, 180, 0.1), rgba(42, 42, 42, 0.7));
+    -fx-border-color: rgba(80, 80, 255, 0.3);
+}
+
+.text-area .content {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px;
+}
+
+.text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+/* Highlight bold player names in text areas */
+.text-area .text.player-name, .player-name {
+    -fx-font-weight: bold;
+    -fx-fill: #FFFFFF;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 1, 0, 0, 1);
+}
+
+/* Team-specific player highlighting */
+.text-area .text.team-a-player {
+    -fx-fill: #FF9999;
+    -fx-font-weight: bold;
+}
+
+.text-area .text.team-b-player {
+    -fx-fill: #9999FF;
+    -fx-font-weight: bold;
+}
+
+/* Modern Chat Area */
 #chatArea {
-    -fx-background-color: #2A2A2A;
-    -fx-text-fill: #E0E0E0;
-    -fx-control-inner-background: #2A2A2A;
-    -fx-border-color: #87CEEB;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-pref-height: 80px;
+    -fx-background-color: #222222;
+    -fx-text-fill: #FFFFFF;
+    -fx-control-inner-background: #222222;
+    -fx-border-color: rgba(64, 149, 198, 0.3);
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-pref-height: 150px;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+#chatArea .content {
+    -fx-background-color: #222222;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px;
+}
+
+#chatArea .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+#chatArea .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+#chatArea .scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+/* Style chat messages based on sender */
+#chatArea .team-a-message {
+    -fx-fill: #FF9999;
+}
+
+#chatArea .team-b-message {
+    -fx-fill: #9999FF;
+}
+
+#chatArea .system-message {
+    -fx-fill: #AAAAAA;
+    -fx-font-style: italic;
 }
 
 /* Chat Input */
 .text-field {
     -fx-background-color: #2A2A2A;
-    -fx-text-fill: #E0E0E0;
-    -fx-prompt-text-fill: #A0A0A0;
-    -fx-border-color: #87CEEB;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-padding: 6px;
-    -fx-font-size: 13px;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #AAAAAA;
+    -fx-border-color: rgba(64, 149, 198, 0.5);
+    -fx-border-width: 1px;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-padding: 12px 20px;
+    -fx-font-size: 14px;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 0);
+}
+
+.text-field:focused {
+    -fx-background-color: #353535;
+    -fx-border-color: #57a9d7;
+    -fx-border-width: 2px;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.1), 1, 0, 0, 0);
 }
 
 /* GridPane */
 .grid-pane {
-    -fx-background-color: #1E1E1E;
-    -fx-padding: 10px;
+    -fx-background-color: transparent;
+    -fx-padding: 20px;
+    -fx-alignment: center;
+    -fx-hgap: 6;
+    -fx-vgap: 6;
+    -fx-max-width: 600px;
+    -fx-max-height: 600px;
+    -fx-min-width: 400px;
+    -fx-min-height: 400px;
+}
+
+/* GridPane Container - to ensure proper centering */
+.grid-container {
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-fill-width: true;
 }
 
 /* Grid Square */
 .grid-square {
     -fx-transition: all 0.15s ease-in-out;
+    -fx-arc-width: 5;
+    -fx-arc-height: 5;
 }
 
 .grid-square:hover {
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.3), 10, 0, 0, 0);
 }
 
-/* Game Info */
-#gameInfo {
-    -fx-fill: #E0E0E0;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
+/* Team-specific grid styling */
+.team-a-grid {
+    -fx-background-color: rgba(255, 200, 200, 0.05);
+    -fx-background-radius: 10px;
+    -fx-effect: innershadow(gaussian, rgba(255, 0, 0, 0.2), 10, 0, 0, 0);
+    -fx-padding: 10px;
 }
 
-/* Custom cursor styles for team A (red) */
-.team-a-cursor {
-    -fx-cursor: url("/Images/red-flag-cursor.png"), default;
-}
-
-/* Custom cursor styles for team B (blue) */
-.team-b-cursor {
-    -fx-cursor: url("/Images/blue-flag-cursor.png"), default;
-}
-
-/* Fallback cursor styles if images aren't available */
-.team-a-cursor-fallback {
-    -fx-cursor: crosshair;
-}
-
-.team-b-cursor-fallback {
-    -fx-cursor: crosshair;
+.team-b-grid {
+    -fx-background-color: rgba(200, 200, 255, 0.05);
+    -fx-background-radius: 10px;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 255, 0.2), 10, 0, 0, 0);
+    -fx-padding: 10px;
 }
 
 /* Held square styles for team A */
 .team-a-held {
-    -fx-fill: #FFAAAA; /* Lighter red for Team A when holding */
-    -fx-stroke: #FF0000;
+    -fx-fill: linear-gradient(to bottom right, #FF9999, #FF6666);
+    -fx-stroke: #FF3333;
     -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(255,50,50,0.7), 10, 0, 0, 0);
 }
 
 /* Held square styles for team B */
 .team-b-held {
-    -fx-fill: #AAAAFF; /* Lighter blue for Team B when holding */
-    -fx-stroke: #0000FF;
+    -fx-fill: linear-gradient(to bottom right, #9999FF, #6666FF);
+    -fx-stroke: #3333FF;
     -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(50,50,255,0.7), 10, 0, 0, 0);
 }
 
 /* Claimed square styles for team A */
 .team-a-claimed {
-    -fx-fill: #FF0000; /* Solid red for Team A when claimed */
+    -fx-fill: linear-gradient(to bottom right, #FF0000, #CC0000);
     -fx-stroke: #000000;
     -fx-stroke-width: 1;
 }
 
 /* Claimed square styles for team B */
 .team-b-claimed {
-    -fx-fill: #0000FF; /* Solid blue for Team B when claimed */
+    -fx-fill: linear-gradient(to bottom right, #0000FF, #0000CC);
     -fx-stroke: #000000;
     -fx-stroke-width: 1;
 }
 
-/* Team-specific grid styling */
-.team-a-grid {
-    -fx-background-color: rgba(255, 200, 200, 0.1);
-}
-
-.team-b-grid {
-    -fx-background-color: rgba(200, 200, 255, 0.1);
-}
-
 /* Hover effect for grid squares */
 .team-a-grid .grid-square:hover {
-    -fx-effect: dropshadow(gaussian, rgba(255, 0, 0, 0.5), 5, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(255, 80, 80, 0.7), 8, 0, 0, 0);
 }
 
 .team-b-grid .grid-square:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 255, 0.5), 5, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(80, 80, 255, 0.7), 8, 0, 0, 0);
+}
+
+/* Custom cursor styles for team A (red) */
+.team-a-cursor {
+    -fx-cursor: url("/Images/red-flag-cursor.png"), crosshair;
+}
+
+/* Custom cursor styles for team B (blue) */
+.team-b-cursor {
+    -fx-cursor: url("/Images/blue-flag-cursor.png"), crosshair;
+}
+
+/* Center alignment for layout containers */
+HBox, VBox {
+    -fx-alignment: center;
+    -fx-spacing: 10;
+    -fx-fill-width: true;
+}
+
+/* Add shadow effects to main containers for depth */
+.border-pane > HBox, .border-pane > VBox {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+/* Specific styling for the center VBox */
+.border-pane .center VBox {
+    -fx-alignment: center;
+    -fx-spacing: 15;
+    -fx-fill-width: true;
+}
+
+/* Responsive sizing */
+@media (max-width: 800px) {
+    .grid-pane {
+        -fx-padding: 10px;
+    }
+
+    .text-area, #chatArea {
+        -fx-pref-width: 120px;
+        -fx-pref-height: 100px;
+    }
+
+    #redScoreBox, #blueScoreBox {
+        -fx-min-width: 80px;
+        -fx-padding: 8px 12px;
+    }
+
+    .text {
+        -fx-font-size: 18px;
+    }
+
+    #gameInfo {
+        -fx-font-size: 16px;
+    }
+}
+
+/* Win Screen Styling */
+.win-screen {
+    -fx-alignment: center;
+    -fx-spacing: 25;
+    -fx-padding: 40px;
+}
+
+.win-screen .text {
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 2, 0, 0, 2);
+}
+
+.win-screen .button {
+    -fx-min-width: 150px;
+}
+
+/* Style for the player's name - make it bold in all locations */
+.player-name {
+    -fx-font-weight: bold;
+    -fx-fill: #57a9d7;
+}
+
+/* ComboBox Styling */
+.combo-box {
+    -fx-background-color: #2A2A2A;
+    -fx-text-fill: white;
+    -fx-border-color: #4095c6;
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-radius: 6px 6px 0 0;
+    -fx-background-radius: 6px;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #2A2A2A;
+    -fx-text-fill: white;
+    -fx-padding: 8px 10px;
+}
+
+.combo-box .list-view {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #4095c6;
+    -fx-border-width: 1px;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #4095c6;
+    -fx-text-fill: white;
+}
+
+/* ScrollBar styling for a cleaner look */
+.scroll-bar {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 0;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #4095c6;
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #57a9d7;
+}
+
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+    -fx-background-color: #AAAAAA;
 }
