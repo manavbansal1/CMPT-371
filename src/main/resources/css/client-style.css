@@ -97,9 +97,84 @@
     -fx-padding: 10px;
 }
 
+/* Grid Square */
+.grid-square {
+    -fx-transition: all 0.15s ease-in-out;
+}
+
+.grid-square:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
 /* Game Info */
 #gameInfo {
     -fx-fill: #E0E0E0;
     -fx-font-size: 18px;
     -fx-font-weight: bold;
+}
+
+/* Custom cursor styles for team A (red) */
+.team-a-cursor {
+    -fx-cursor: url("/Images/red-flag-cursor.png"), default;
+}
+
+/* Custom cursor styles for team B (blue) */
+.team-b-cursor {
+    -fx-cursor: url("/Images/blue-flag-cursor.png"), default;
+}
+
+/* Fallback cursor styles if images aren't available */
+.team-a-cursor-fallback {
+    -fx-cursor: crosshair;
+}
+
+.team-b-cursor-fallback {
+    -fx-cursor: crosshair;
+}
+
+/* Held square styles for team A */
+.team-a-held {
+    -fx-fill: #FFAAAA; /* Lighter red for Team A when holding */
+    -fx-stroke: #FF0000;
+    -fx-stroke-width: 2;
+}
+
+/* Held square styles for team B */
+.team-b-held {
+    -fx-fill: #AAAAFF; /* Lighter blue for Team B when holding */
+    -fx-stroke: #0000FF;
+    -fx-stroke-width: 2;
+}
+
+/* Claimed square styles for team A */
+.team-a-claimed {
+    -fx-fill: #FF0000; /* Solid red for Team A when claimed */
+    -fx-stroke: #000000;
+    -fx-stroke-width: 1;
+}
+
+/* Claimed square styles for team B */
+.team-b-claimed {
+    -fx-fill: #0000FF; /* Solid blue for Team B when claimed */
+    -fx-stroke: #000000;
+    -fx-stroke-width: 1;
+}
+
+/* Team-specific grid styling */
+.team-a-grid {
+    -fx-background-color: rgba(255, 200, 200, 0.1);
+}
+
+.team-b-grid {
+    -fx-background-color: rgba(200, 200, 255, 0.1);
+}
+
+/* Hover effect for grid squares */
+.team-a-grid .grid-square:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 0, 0.5), 5, 0, 0, 0);
+}
+
+.team-b-grid .grid-square:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 255, 0.5), 5, 0, 0, 0);
 }
