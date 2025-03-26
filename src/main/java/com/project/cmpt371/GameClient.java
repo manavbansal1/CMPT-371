@@ -36,7 +36,8 @@ public class GameClient extends Application {
     private Map<String, Thread> pressTimers = new HashMap<>();
     private String assignedTeam;
     private Text gameInfo;
-    private Text teamScores;
+    private Text redScoreText; // For red team score
+    private Text blueScoreText; // For blue team score
     private TextArea teamAList;
     private TextArea teamBList;
     private TextArea chatArea;
@@ -120,26 +121,32 @@ public class GameClient extends Application {
             }
         }
 
-        // Top: Team Scores
-        teamScores = new Text("Red Max: 0 | Blue Max: 0");
-        HBox topBox = new HBox(teamScores);
+        // Top: Team Scores in Colored Boxes
+        redScoreText = new Text("0");
+        HBox redScoreBox = new HBox(redScoreText);
+        redScoreBox.setId("redScoreBox");
+        redScoreBox.setAlignment(Pos.CENTER);
+
+        blueScoreText = new Text("0");
+        HBox blueScoreBox = new HBox(blueScoreText);
+        blueScoreBox.setId("blueScoreBox");
+        blueScoreBox.setAlignment(Pos.CENTER);
+
+        HBox topBox = new HBox(20, redScoreBox, blueScoreBox);
         topBox.setAlignment(Pos.CENTER);
-        topBox.setPadding(new Insets(10));
+        topBox.setPadding(new Insets(15));
 
         // Center: Game Info and Grid
         gameInfo = new Text("Welcome to Team Box Conquest!");
-        VBox centerBox = new VBox(10, gameInfo, gridPane);
+        gameInfo.setId("gameInfo");
+        VBox centerBox = new VBox(15, gameInfo, gridPane);
         centerBox.setAlignment(Pos.CENTER);
 
         // Right: Team Lists and Leave Button
         teamAList = new TextArea("Red Team:\n");
         teamAList.setEditable(false);
-        teamAList.setPrefWidth(150);
-        teamAList.setPrefHeight(100);
         teamBList = new TextArea("Blue Team:\n");
         teamBList.setEditable(false);
-        teamBList.setPrefWidth(150);
-        teamBList.setPrefHeight(100);
         Button leaveButton = new Button("Leave Game");
         leaveButton.setOnAction(e -> {
             isRunning = false;
@@ -150,14 +157,14 @@ public class GameClient extends Application {
                 ex.printStackTrace();
             }
         });
-        VBox rightBox = new VBox(10, teamAList, teamBList, leaveButton);
+        VBox rightBox = new VBox(15, teamAList, teamBList, leaveButton);
         rightBox.setAlignment(Pos.CENTER);
-        rightBox.setPadding(new Insets(10));
+        rightBox.setPadding(new Insets(15));
 
         // Bottom: Chat
         chatArea = new TextArea();
+        chatArea.setId("chatArea");
         chatArea.setEditable(false);
-        chatArea.setPrefHeight(100);
         chatInput = new TextField();
         chatInput.setPromptText("Type a message...");
         chatInput.setOnAction(e -> {
@@ -172,8 +179,8 @@ public class GameClient extends Application {
                 }
             }
         });
-        VBox chatBox = new VBox(5, chatArea, chatInput);
-        chatBox.setPadding(new Insets(10));
+        VBox chatBox = new VBox(10, chatArea, chatInput);
+        chatBox.setPadding(new Insets(15));
 
         // Main Layout
         BorderPane root = new BorderPane();
@@ -183,7 +190,7 @@ public class GameClient extends Application {
         root.setBottom(chatBox);
 
         Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/client-style.css").toExternalForm());
         primaryStage.setTitle("Team Box Conquest - " + playerName);
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> {
@@ -249,7 +256,10 @@ public class GameClient extends Application {
                     String[] parts = message.split(" ");
                     int maxA = Integer.parseInt(parts[1]);
                     int maxB = Integer.parseInt(parts[2]);
-                    Platform.runLater(() -> teamScores.setText("Red Max: " + maxA + " | Blue Max: " + maxB));
+                    Platform.runLater(() -> {
+                        redScoreText.setText(String.valueOf(maxA));
+                        blueScoreText.setText(String.valueOf(maxB));
+                    });
                 } else if (message.startsWith("TEAM_LISTS")) {
                     String[] parts = message.split(" ", 3);
                     String teamA = parts[1];
@@ -272,17 +282,17 @@ public class GameClient extends Application {
     }
 
     private void showWinScreen(String winner) {
-        Color backgroundColor = winner.equals("TEAM_A") ? Color.rgb(255, 0, 0, 0.5) : 
-                               winner.equals("TEAM_B") ? Color.rgb(0, 0, 255, 0.5) : 
-                               Color.rgb(128, 128, 128, 0.5);
+        Color backgroundColor = winner.equals("TEAM_A") ? Color.rgb(255, 85, 85, 0.9) : 
+                               winner.equals("TEAM_B") ? Color.rgb(85, 85, 255, 0.9) : 
+                               Color.rgb(128, 128, 128, 0.9);
         String headingText = winner.equals("TIE") ? "Game Over: Tie!" : "Team " + (winner.equals("TEAM_A") ? "A" : "B") + " Won";
 
-        VBox winBox = new VBox(20);
+        VBox winBox = new VBox(25);
         winBox.setAlignment(Pos.CENTER);
         winBox.setBackground(new Background(new BackgroundFill(backgroundColor, null, null)));
 
         Text heading = new Text(headingText);
-        heading.setFont(Font.font("Arial", 36));
+        heading.setFont(Font.font("Segoe UI", 40));
         heading.setFill(Color.WHITE);
 
         Button leaveButton = new Button("Leave");
@@ -321,7 +331,7 @@ public class GameClient extends Application {
         winBox.getChildren().addAll(heading, buttonBox);
 
         Scene winScene = new Scene(winBox, 800, 600);
-        winScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        winScene.getStylesheets().add(getClass().getResource("/css/client-style.css").toExternalForm());
         primaryStage.setScene(winScene);
     }
 
@@ -347,7 +357,7 @@ public class GameClient extends Application {
             square.setFill(Color.BLUE);
             square.setStroke(Color.BLACK);
         } else if (heldState[row][col] != null) {
-            square.setFill(Color.YELLOW); // Visual indicator for held block
+            square.setFill(Color.YELLOW);
             square.setStroke(Color.BLACK);
         } else {
             square.setFill(Color.LIGHTGRAY);

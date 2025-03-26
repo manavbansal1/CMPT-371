@@ -1,0 +1,82 @@
+/* Root styles */
+.root {
+    -fx-background-color: #1E1E1E; /* Darker gray for modern feel */
+    -fx-font-family: "Segoe UI", sans-serif; /* Modern font */
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #87CEEB; /* Sky blue */
+    -fx-text-fill: #1E1E1E; /* Dark gray text */
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px; /* Smaller padding for compact buttons */
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2); /* Subtle shadow */
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s ease; /* Smooth transition */
+}
+
+.button:hover {
+    -fx-background-color: #ADD8E6; /* Lighter sky blue */
+    -fx-scale-x: 1.05; /* Slight growth */
+    -fx-scale-y: 1.05;
+}
+
+.button:pressed {
+    -fx-background-color: #4682B4; /* Darker blue */
+    -fx-scale-x: 0.98; /* Slight shrink on press */
+    -fx-scale-y: 0.98;
+}
+
+/* Specific button sizes */
+#hostButton, #joinButton, #startButton, #joinGameButton {
+    -fx-pref-width: 150px; /* Smaller than original 200px */
+    -fx-pref-height: 40px; /* Smaller than original 50px */
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #E0E0E0; /* Light gray for readability */
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+}
+
+/* Text Fields */
+.text-field {
+    -fx-background-color: #2A2A2A; /* Darker input background */
+    -fx-text-fill: #E0E0E0;
+    -fx-prompt-text-fill: #A0A0A0; /* Subtle prompt */
+    -fx-border-color: #87CEEB;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 6px;
+    -fx-font-size: 13px;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-color: #2A2A2A;
+    -fx-text-fill: #E0E0E0;
+    -fx-border-color: #87CEEB;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #2A2A2A;
+    -fx-text-fill: #E0E0E0;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #87CEEB;
+    -fx-text-fill: #1E1E1E;
+}
+
+/* VBox and HBox for layout */
+.vbox, .hbox {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}

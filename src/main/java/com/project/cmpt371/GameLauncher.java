@@ -32,19 +32,16 @@ public class GameLauncher extends Application {
         hostButton.setId("hostButton");
         joinButton.setId("joinButton");
 
-        hostButton.setPrefSize(200, 50);
-        joinButton.setPrefSize(200, 50);
-
         Image titleImage = new Image(String.valueOf(getClass().getResource("/Images/GameLauncherTitle.png")));
         ImageView titleImageView = new ImageView(titleImage);
 
-        VBox optionsBox = new VBox(15, hostButton, joinButton);
-        VBox screenBox = new VBox(25, titleImageView, optionsBox);
+        VBox optionsBox = new VBox(20, hostButton, joinButton);
+        VBox screenBox = new VBox(30, titleImageView, optionsBox);
         optionsBox.setAlignment(Pos.CENTER);
         screenBox.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(screenBox, 400, 300);
-        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/launcher-style.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -70,7 +67,7 @@ public class GameLauncher extends Application {
         Label ipLabel = new Label("IP Address: " + ip);
         Label portLabel = new Label("Port: 12345");
 
-        VBox infoBox = new VBox(10, ipLabel, portLabel);
+        VBox infoBox = new VBox(15, ipLabel, portLabel);
         infoBox.setAlignment(Pos.CENTER);
 
         Button startButton = new Button("Start");
@@ -83,11 +80,11 @@ public class GameLauncher extends Application {
 
         HBox bottomBox = new HBox(startButton);
         bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
-        bottomBox.setPadding(new Insets(10));
+        bottomBox.setPadding(new Insets(15));
         hostPane.setBottom(bottomBox); // Fixed typo: should be 'bottomBox'
 
         Scene hostScene = new Scene(hostPane, 400, 300);
-        hostScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        hostScene.getStylesheets().add(getClass().getResource("/css/launcher-style.css").toExternalForm());
         primaryStage.setScene(hostScene);
     }
 
@@ -105,7 +102,7 @@ public class GameLauncher extends Application {
         Label teamLabel = new Label("Choose Team:");
         ComboBox<String> teamChoice = new ComboBox<>();
         teamChoice.getItems().addAll("Red (Team A)", "Blue (Team B)");
-        Label teamStatusLabel = new Label("Red Team: " + (MAX_PLAYERS_PER_TEAM - teamACount) + " spots left | Blue Team: " + (MAX_PLAYERS_PER_TEAM - teamBCount) + " spots left");
+        Label teamStatusLabel = new Label("Red Team: " + (MAX_PLAYERS_PER_TEAM - teamACount) + " spots | Blue Team: " + (MAX_PLAYERS_PER_TEAM - teamBCount) + " spots");
 
         Button joinButton = new Button("Join");
         joinButton.setId("joinGameButton");
@@ -134,11 +131,11 @@ public class GameLauncher extends Application {
             launchClient(primaryStage);
         });
 
-        VBox centerBox = new VBox(10, nameLabel, nameField, teamLabel, teamChoice, teamStatusLabel, joinButton);
+        VBox centerBox = new VBox(15, nameLabel, nameField, teamLabel, teamChoice, teamStatusLabel, joinButton);
         centerBox.setAlignment(Pos.CENTER);
 
         Scene setupScene = new Scene(centerBox, 400, 300);
-        setupScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        setupScene.getStylesheets().add(getClass().getResource("/css/launcher-style.css").toExternalForm());
         primaryStage.setScene(setupScene);
     }
 
@@ -146,7 +143,7 @@ public class GameLauncher extends Application {
         Label ipPrompt = new Label("Enter Host IP:");
         TextField ipField = new TextField();
         Label portPrompt = new Label("Enter Port:");
-        TextField portField = new TextField();
+        TextField portField = new TextField("12345"); // Default port
 
         Button joinButton = new Button("Join");
         joinButton.setId("joinGameButton");
@@ -184,11 +181,11 @@ public class GameLauncher extends Application {
             }
         });
 
-        VBox centerBox = new VBox(10, ipPrompt, ipField, portPrompt, portField, joinButton);
+        VBox centerBox = new VBox(15, ipPrompt, ipField, portPrompt, portField, joinButton);
         centerBox.setAlignment(Pos.CENTER);
 
         Scene joinScene = new Scene(centerBox, 400, 300);
-        joinScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        joinScene.getStylesheets().add(getClass().getResource("/css/launcher-style.css").toExternalForm());
         primaryStage.setScene(joinScene);
     }
 
@@ -206,7 +203,7 @@ public class GameLauncher extends Application {
         Label teamLabel = new Label("Choose Team:");
         ComboBox<String> teamChoice = new ComboBox<>();
         teamChoice.getItems().addAll("Red (Team A)", "Blue (Team B)");
-        Label teamStatusLabel = new Label("Red Team: " + (MAX_PLAYERS_PER_TEAM - teamACount) + " spots left | Blue Team: " + (MAX_PLAYERS_PER_TEAM - teamBCount) + " spots left");
+        Label teamStatusLabel = new Label("Red Team: " + (MAX_PLAYERS_PER_TEAM - teamACount) + " spots | Blue Team: " + (MAX_PLAYERS_PER_TEAM - teamBCount) + " spots");
 
         Button joinButton = new Button("Join");
         joinButton.setId("joinGameButton");
@@ -233,11 +230,11 @@ public class GameLauncher extends Application {
             launchClient(primaryStage);
         });
 
-        VBox centerBox = new VBox(10, nameLabel, nameField, teamLabel, teamChoice, teamStatusLabel, joinButton);
+        VBox centerBox = new VBox(15, nameLabel, nameField, teamLabel, teamChoice, teamStatusLabel, joinButton);
         centerBox.setAlignment(Pos.CENTER);
 
         Scene setupScene = new Scene(centerBox, 400, 300);
-        setupScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        setupScene.getStylesheets().add(getClass().getResource("/css/launcher-style.css").toExternalForm());
         primaryStage.setScene(setupScene);
     }
 
