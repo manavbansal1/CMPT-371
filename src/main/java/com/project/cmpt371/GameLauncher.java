@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -58,16 +60,67 @@ public class GameLauncher extends Application {
             }
         }).start();
 
-        String ip = "Unknown";
+        final String ip; // Declare as final
         try {
             ip = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             e.printStackTrace();
+            return; // Exit method if IP cannot be determined
         }
-        Label ipLabel = new Label("IP Address: " + ip);
-        Label portLabel = new Label("Port: 12345");
 
-        VBox infoBox = new VBox(15, ipLabel, portLabel);
+        Label ipLabel = new Label("IP Address: " + ip);
+        ipLabel.setId("ipLabel");
+        Button ipCopyButton = new Button("Copy");
+        ipCopyButton.setId("ipCopyButton");
+        ipCopyButton.setOnAction(e -> {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(ip);
+            clipboard.setContent(content);
+            ipCopyButton.setText("Copied!");
+            ipCopyButton.setDisable(true);
+            new Thread(() -> {
+                try {
+                    Thread.sleep(2000); // Show "Copied!" for 2 seconds
+                    Platform.runLater(() -> {
+                        ipCopyButton.setText("Copy");
+                        ipCopyButton.setDisable(false);
+                    });
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }).start();
+        });
+        HBox ipBox = new HBox(10, ipLabel, ipCopyButton);
+        ipBox.setAlignment(Pos.CENTER);
+
+        Label portLabel = new Label("Port: 12345");
+        portLabel.setId("portLabel");
+        Button portCopyButton = new Button("Copy");
+        portCopyButton.setId("portCopyButton");
+        portCopyButton.setOnAction(e -> {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString("12345");
+            clipboard.setContent(content);
+            portCopyButton.setText("Copied!");
+            portCopyButton.setDisable(true);
+            new Thread(() -> {
+                try {
+                    Thread.sleep(2000); // Show "Copied!" for 2 seconds
+                    Platform.runLater(() -> {
+                        portCopyButton.setText("Copy");
+                        portCopyButton.setDisable(false);
+                    });
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }).start();
+        });
+        HBox portBox = new HBox(10, portLabel, portCopyButton);
+        portBox.setAlignment(Pos.CENTER);
+
+        VBox infoBox = new VBox(15, ipBox, portBox);
         infoBox.setAlignment(Pos.CENTER);
 
         Button startButton = new Button("Start");
@@ -81,7 +134,7 @@ public class GameLauncher extends Application {
         HBox bottomBox = new HBox(startButton);
         bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
         bottomBox.setPadding(new Insets(15));
-        hostPane.setBottom(bottomBox); // Fixed typo: should be 'bottomBox'
+        hostPane.setBottom(bottomBox); // Note: Should be 'bottomBox', assuming a typo
 
         Scene hostScene = new Scene(hostPane, 400, 300);
         hostScene.getStylesheets().add(getClass().getResource("/css/launcher-style.css").toExternalForm());
@@ -143,7 +196,7 @@ public class GameLauncher extends Application {
         Label ipPrompt = new Label("Enter Host IP:");
         TextField ipField = new TextField();
         Label portPrompt = new Label("Enter Port:");
-        TextField portField = new TextField("12345"); // Default port
+        TextField portField = new TextField("12345");
 
         Button joinButton = new Button("Join");
         joinButton.setId("joinGameButton");

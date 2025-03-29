@@ -12,7 +12,7 @@ public class GameServer {
     private static final int MAX_TOTAL_PLAYERS = 6;
     private static Map<String, ClientHandler> clients = new HashMap<>();
     private static String[][] boardState = new String[GRID_SIZE][GRID_SIZE];
-    private static String[][] heldState = new String[GRID_SIZE][GRID_SIZE]; // Tracks who is holding a block
+    private static String[][] heldState = new String[GRID_SIZE][GRID_SIZE];
     private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
     private static int teamACount = 0;
     private static int teamBCount = 0;
@@ -54,7 +54,7 @@ public class GameServer {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 boardState[row][col] = "UNCLAIMED";
-                heldState[row][col] = null; // Null means not held
+                heldState[row][col] = null;
             }
         }
         teamAPlayers.clear();
@@ -76,9 +76,9 @@ public class GameServer {
 
     private static void handleClaimRequest(ClientHandler client, int row, int col) throws IOException {
         synchronized (boardState) {
-            if ("UNCLAIMED".equals(boardState[row][col]) && heldState[row][col] != null && heldState[row][col].equals(client.clientId)) {
-                boardState[row][col] = client.getTeam().equals("TEAM_A") ? "TEAM_A" : "TEAM_B";
-                heldState[row][col] = null; // Release hold after claim
+            if ("UNCLAIMED".equals(boardState[row][col]) && heldState[row][col] != null && heldState[row][col].equals(client.getTeam())) {
+                boardState[row][col] = client.getTeam();
+                heldState[row][col] = null;
                 broadcastGameState();
                 checkWinCondition(client);
                 broadcastTeamScores();
@@ -89,7 +89,8 @@ public class GameServer {
     private static void handleHoldRequest(ClientHandler client, int row, int col) throws IOException {
         synchronized (boardState) {
             if ("UNCLAIMED".equals(boardState[row][col]) && heldState[row][col] == null) {
-                heldState[row][col] = client.clientId;
+                heldState[row][col] = client.getTeam();
+                broadcastHoldInfo(row, col, client.getTeam());
                 broadcastGameState();
             }
         }
@@ -97,9 +98,26 @@ public class GameServer {
 
     private static void handleReleaseRequest(ClientHandler client, int row, int col) throws IOException {
         synchronized (boardState) {
-            if (heldState[row][col] != null && heldState[row][col].equals(client.clientId)) {
+            if (heldState[row][col] != null && heldState[row][col].equals(client.getTeam())) {
                 heldState[row][col] = null;
+                broadcastReleaseInfo(row, col);
                 broadcastGameState();
+            }
+        }
+    }
+
+    private static void broadcastHoldInfo(int row, int col, String team) {
+        synchronized (clients) {
+            for (ClientHandler clientHandler : clients.values()) {
+                clientHandler.sendMessage("HOLD_INFO " + row + " " + col + " " + team);
+            }
+        }
+    }
+
+    private static void broadcastReleaseInfo(int row, int col) {
+        synchronized (clients) {
+            for (ClientHandler clientHandler : clients.values()) {
+                clientHandler.sendMessage("RELEASE_INFO " + row + " " + col);
             }
         }
     }
@@ -134,7 +152,6 @@ public class GameServer {
 
     private static int getMaxConsecutive(String team) {
         int max = 0;
-        // Horizontal
         for (int row = 0; row < GRID_SIZE; row++) {
             int count = 0;
             for (int col = 0; col < GRID_SIZE; col++) {
@@ -146,7 +163,6 @@ public class GameServer {
                 }
             }
         }
-        // Vertical
         for (int col = 0; col < GRID_SIZE; col++) {
             int count = 0;
             for (int row = 0; row < GRID_SIZE; row++) {
@@ -158,7 +174,6 @@ public class GameServer {
                 }
             }
         }
-        // Diagonal (top-left to bottom-right)
         for (int startRow = 0; startRow < GRID_SIZE; startRow++) {
             int count = 0;
             for (int row = startRow, col = 0; row < GRID_SIZE && col < GRID_SIZE; row++, col++) {
@@ -181,7 +196,6 @@ public class GameServer {
                 }
             }
         }
-        // Diagonal (top-right to bottom-left)
         for (int startRow = 0; startRow < GRID_SIZE; startRow++) {
             int count = 0;
             for (int row = startRow, col = GRID_SIZE - 1; row < GRID_SIZE && col >= 0; row++, col--) {

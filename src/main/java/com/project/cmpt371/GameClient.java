@@ -59,14 +59,11 @@ public class GameClient extends Application {
         primaryStage.setHeight(1040);
         primaryStage.setFullScreen(true);
 
-        // Set up preliminary UI - waiting for server confirmation
         setupUI();
 
-        // Request team assignment
         outputStream.writeUTF("PLAYER_INFO " + playerName + " " + teamColor);
         outputStream.flush();
 
-        // Start listening for server responses
         new Thread(this::listenForMessages).start();
     }
 
@@ -92,7 +89,6 @@ public class GameClient extends Application {
             }
         }
 
-        // Top: Team Scores
         redScoreText = new Text("0");
         HBox redScoreBox = new HBox(redScoreText);
         redScoreBox.setId("redScoreBox");
@@ -107,11 +103,9 @@ public class GameClient extends Application {
         topBox.setAlignment(Pos.CENTER);
         topBox.setPadding(new Insets(15));
 
-        // Center: Game Info and Grid
         gameInfo = new Text("Connecting to server, please wait...");
         gameInfo.setId("gameInfo");
 
-        // Create a container to center the grid and control its size
         StackPane gridContainer = new StackPane(gridPane);
         gridContainer.getStyleClass().add("grid-container");
         gridContainer.setMaxWidth(600);
@@ -123,8 +117,6 @@ public class GameClient extends Application {
         centerBox.setAlignment(Pos.CENTER);
         centerBox.setPrefWidth(Region.USE_COMPUTED_SIZE);
 
-        // Right: Team Lists and Leave Button
-        // Add team list headers
         Label teamAHeader = new Label("Red Team");
         teamAHeader.getStyleClass().add("team-header");
 
@@ -159,7 +151,6 @@ public class GameClient extends Application {
         rightBox.setPrefWidth(200);
         rightBox.setMaxWidth(200);
 
-        // Bottom: Chat
         Label chatLabel = new Label("Chat");
         chatLabel.getStyleClass().add("chat-header");
 
@@ -186,7 +177,6 @@ public class GameClient extends Application {
         chatBox.setPadding(new Insets(15));
         chatBox.setMaxHeight(200);
 
-        // Main Layout
         BorderPane root = new BorderPane();
         root.setTop(topBox);
         root.setCenter(centerBox);
@@ -212,7 +202,6 @@ public class GameClient extends Application {
     }
 
     private void setupInteractions() {
-        // Only set up interactions after server confirmation
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 final int finalRow = row;
@@ -227,14 +216,11 @@ public class GameClient extends Application {
                             outputStream.flush();
                             pressStartTimes.put(key, System.currentTimeMillis());
 
-                            // Apply the correct hold style immediately for visual feedback
                             square.getStyleClass().removeAll("team-a-held", "team-b-held");
                             if ("TEAM_A".equals(assignedTeam)) {
                                 square.getStyleClass().add("team-a-held");
-                                System.out.println("Applied red hold style on mouse press");
                             } else {
                                 square.getStyleClass().add("team-b-held");
-                                System.out.println("Applied blue hold style on mouse press");
                             }
 
                             Thread timer = new Thread(() -> {
@@ -294,7 +280,6 @@ public class GameClient extends Application {
             }
         }
 
-        // Set up grid styling based on confirmed team
         if ("TEAM_A".equals(assignedTeam)) {
             gridPane.getStyleClass().add("team-a-grid");
             System.out.println("Applied team-a-grid style");
@@ -303,7 +288,6 @@ public class GameClient extends Application {
             System.out.println("Applied team-b-grid style");
         }
 
-        // Update title with confirmed team
         primaryStage.setTitle("Team Box Conquest - " + playerName + " (" +
                 (assignedTeam.equals("TEAM_A") ? "Red" : "Blue") + " Team)");
     }
@@ -322,8 +306,6 @@ public class GameClient extends Application {
 
                     Platform.runLater(() -> {
                         gameInfo.setText("Playing as " + assignedName + " on " + (assignedTeam.equals("TEAM_A") ? "Red" : "Blue") + " Team");
-
-                        // Now that team is confirmed, setup interactions
                         if (!serverConfirmed) {
                             serverConfirmed = true;
                             setupInteractions();
@@ -374,17 +356,14 @@ public class GameClient extends Application {
                     String teamA = parts[1];
                     String teamB = parts[2];
                     Platform.runLater(() -> {
-                        // Format player names with bold styling
                         String formattedTeamA = formatTeamList(teamA, "Red");
                         String formattedTeamB = formatTeamList(teamB, "Blue");
-
                         teamAList.setText(formattedTeamA);
                         teamBList.setText(formattedTeamB);
                     });
                 } else if (message.startsWith("CHAT")) {
                     String chatMsg = message.substring(5);
                     Platform.runLater(() -> {
-                        // Format chat messages with appropriate styling
                         String formattedMsg = formatChatMessage(chatMsg);
                         chatArea.appendText(formattedMsg + "\n");
                     });
@@ -393,26 +372,14 @@ public class GameClient extends Application {
                     int row = Integer.parseInt(parts[1]);
                     int col = Integer.parseInt(parts[2]);
                     String holdingTeam = parts[3];
-                    Platform.runLater(() -> {
-                        Rectangle square = gridSquares.get(row + "," + col);
-                        square.getStyleClass().removeAll("team-a-held", "team-b-held");
-                        if ("TEAM_A".equals(holdingTeam)) {
-                            square.getStyleClass().add("team-a-held");
-                        } else {
-                            square.getStyleClass().add("team-b-held");
-                        }
-                    });
+                    heldState[row][col] = holdingTeam;
+                    Platform.runLater(() -> updateBoard(row, col));
                 } else if (message.startsWith("RELEASE_INFO")) {
                     String[] parts = message.split(" ");
                     int row = Integer.parseInt(parts[1]);
                     int col = Integer.parseInt(parts[2]);
-                    Platform.runLater(() -> {
-                        Rectangle square = gridSquares.get(row + "," + col);
-                        square.getStyleClass().removeAll("team-a-held", "team-b-held");
-                        if ("UNCLAIMED".equals(boardState[row][col])) {
-                            square.setFill(Color.LIGHTGRAY);
-                        }
-                    });
+                    heldState[row][col] = null;
+                    Platform.runLater(() -> updateBoard(row, col));
                 }
             }
         } catch (IOException e) {
@@ -423,30 +390,23 @@ public class GameClient extends Application {
         }
     }
 
-    // Helper method to format team player lists
     private String formatTeamList(String teamList, String teamName) {
         if (teamList.isEmpty()) {
             return "";
         }
-
         String[] players = teamList.split(",");
         StringBuilder sb = new StringBuilder();
-
         for (String player : players) {
-            // Add special formatting for the current player
             if (player.equals(playerName)) {
                 sb.append(player).append(" (You)\n");
             } else {
                 sb.append(player).append("\n");
             }
         }
-
         return sb.toString();
     }
 
-    // Helper method to format chat messages
     private String formatChatMessage(String message) {
-        // You could add styling based on who sent the message
         if (message.startsWith(playerName)) {
             return message + " (You)";
         }
@@ -479,7 +439,6 @@ public class GameClient extends Application {
             }
         });
 
-        // Store the current player's name and team before rejoining
         final String currentName = playerName;
         final String currentTeam = teamColor;
 
@@ -490,10 +449,8 @@ public class GameClient extends Application {
                 primaryStage.close();
                 Platform.runLater(() -> {
                     try {
-                        // Preserve the player's name and team color when rejoining
                         GameClient.playerName = currentName;
                         GameClient.teamColor = currentTeam;
-
                         new GameClient().start(new Stage());
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -520,21 +477,6 @@ public class GameClient extends Application {
         try {
             outputStream.writeUTF("CLAIM_REQUEST " + row + " " + col);
             outputStream.flush();
-
-            // Access the square directly by its coordinates
-            Rectangle square = gridSquares.get(row + "," + col);
-
-            // Remove any existing team styles
-            square.getStyleClass().removeAll("team-a-held", "team-b-held");
-
-            // Apply the correct style based on this client's assigned team
-            if ("TEAM_A".equals(assignedTeam)) {
-                square.getStyleClass().add("team-a-held");
-                System.out.println("Applied red hold style on claim request");
-            } else {
-                square.getStyleClass().add("team-b-held");
-                System.out.println("Applied blue hold style on claim request");
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -543,57 +485,22 @@ public class GameClient extends Application {
     private void updateBoard(int row, int col) {
         Rectangle square = gridSquares.get(row + "," + col);
 
-        // Clear all team-related style classes first
         square.getStyleClass().removeAll("team-a-held", "team-b-held", "team-a-claimed", "team-b-claimed");
 
-        // Check if this is a square we are holding
-        String key = row + "," + col;
-        boolean isHeldByMe = pressStartTimes.containsKey(key);
-
-        // Handle claimed squares
         if ("TEAM_A".equals(boardState[row][col])) {
             square.getStyleClass().add("team-a-claimed");
         } else if ("TEAM_B".equals(boardState[row][col])) {
             square.getStyleClass().add("team-b-claimed");
-        }
-        // Handle held squares - prioritize local holds over server holds
-        else if (isHeldByMe) {
-            // For squares we are holding, use our team color
-            if ("TEAM_A".equals(assignedTeam)) {
+        } else if (heldState[row][col] != null && !"NONE".equals(heldState[row][col])) {
+            if ("TEAM_A".equals(heldState[row][col])) {
                 square.getStyleClass().add("team-a-held");
-            } else {
+            } else if ("TEAM_B".equals(heldState[row][col])) {
                 square.getStyleClass().add("team-b-held");
             }
-        }
-        else if (heldState[row][col] != null) {
-            // For squares held by others, use server team info
-            String holdingTeam = determineHoldingTeam(heldState[row][col]);
-            if ("TEAM_A".equals(holdingTeam)) {
-                square.getStyleClass().add("team-a-held");
-            } else {
-                square.getStyleClass().add("team-b-held");
-            }
-        }
-        // Default unclaimed state
-        else {
+        } else {
             square.setFill(Color.LIGHTGRAY);
             square.setStroke(Color.BLACK);
         }
-    }
-
-    private String determineHoldingTeam(String holdingId) {
-        // Try to determine team from the holdingId
-        if (holdingId != null) {
-            if (holdingId.contains("TEAM_A")) {
-                return "TEAM_A";
-            } else if (holdingId.contains("TEAM_B")) {
-                return "TEAM_B";
-            } else {
-                // Fallback method
-                return holdingId.hashCode() % 2 == 0 ? "TEAM_A" : "TEAM_B";
-            }
-        }
-        return null;
     }
 
     private void showAlert(String title, String message) {

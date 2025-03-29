@@ -137,6 +137,64 @@ Label:contains("IP Address:"), Label:contains("Port:"), Label:contains("spots") 
     -fx-background-radius: 5px;
 }
 
+/* Specific styling for IP Address and Port labels */
+#ipLabel, #portLabel {
+    -fx-font-size: 16px; /* Slightly larger for emphasis */
+    -fx-text-fill: #e8e8e8; /* Bright white to stand out */
+    -fx-font-weight: bold; /* Bold for prominence */
+    -fx-background-color: #2d2d2d; /* Match text-field background */
+    -fx-border-color: #4095c6; /* Blue border to match theme */
+    -fx-border-width: 0 0 2px 0; /* Bottom border only */
+    -fx-border-radius: 2px;
+    -fx-background-radius: 4px; /* Slight rounding */
+    -fx-padding: 8px 12px; /* Consistent with text fields */
+    -fx-alignment: center; /* Centered text */
+    -fx-pref-width: 280px; /* Match text-field width */
+    -fx-max-width: 350px;
+    -fx-min-width: 200px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0, 0, 1); /* Subtle shadow */
+}
+
+/* Hover effect for IP and Port labels */
+#ipLabel:hover, #portLabel:hover {
+    -fx-border-color: #57a9d7; /* Lighter blue on hover */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 5, 0, 0, 2);
+    -fx-translate-y: -1px; /* Slight lift */
+}
+
+/* Styling for copy buttons */
+#ipCopyButton, #portCopyButton {
+    -fx-background-color: #4095c6; /* Match main button color */
+    -fx-text-fill: white;
+    -fx-font-size: 12px; /* Smaller font */
+    -fx-font-weight: bold;
+    -fx-padding: 4px 8px; /* Small padding for compact size */
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-pref-width: 60px; /* Small width */
+    -fx-pref-height: 24px; /* Small height */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0, 0, 1); /* Subtle shadow */
+    -fx-cursor: hand;
+}
+
+#ipCopyButton:hover, #portCopyButton:hover {
+    -fx-background-color: #57a9d7;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 3, 0, 0, 1);
+    -fx-translate-y: -1px;
+}
+
+#ipCopyButton:pressed, #portCopyButton:pressed {
+    -fx-background-color: #3685b3;
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 1, 0, 0, 0);
+}
+
+#ipCopyButton:disabled, #portCopyButton:disabled {
+    -fx-background-color: #666666; /* Grayed out when disabled */
+    -fx-text-fill: #cccccc;
+    -fx-effect: none;
+}
+
 /* Add some padding to the main container */
 .root > .vbox {
     -fx-padding: 30px 20px;
@@ -150,5 +208,13 @@ Label:contains("IP Address:"), Label:contains("Port:"), Label:contains("spots") 
 
     #hostButton, #joinButton, #startButton, #joinGameButton {
         -fx-pref-width: 90%;
+    }
+
+    #ipLabel, #portLabel {
+        -fx-pref-width: 80%; /* Slightly smaller to fit button */
+    }
+
+    #ipCopyButton, #portCopyButton {
+        -fx-pref-width: 50px; /* Even smaller on small screens */
     }
 }
