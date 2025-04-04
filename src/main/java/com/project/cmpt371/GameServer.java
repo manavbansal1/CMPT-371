@@ -12,13 +12,16 @@ public class GameServer {
     private static final int MAX_TOTAL_PLAYERS = 6;
     private static Map<String, ClientHandler> clients = new HashMap<>();
     private static String[][] boardState = new String[GRID_SIZE][GRID_SIZE];
-    private static String[][] heldState = new String[GRID_SIZE][GRID_SIZE];
+    private static Map<String, Integer>[][] heldState = new HashMap[GRID_SIZE][GRID_SIZE];
     private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private static final ScheduledExecutorService timerService = Executors.newScheduledThreadPool(1);
+    private static Map<String, ScheduledFuture<?>> claimTimers = new HashMap<>();
     private static int teamACount = 0;
     private static int teamBCount = 0;
     private static int clientCounter = 0;
     private static List<String> teamAPlayers = new ArrayList<>();
     private static List<String> teamBPlayers = new ArrayList<>();
+    
 
     public static void main(String[] args) {
         resetBoard();
@@ -54,7 +57,7 @@ public class GameServer {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 boardState[row][col] = "UNCLAIMED";
-                heldState[row][col] = null;
+                heldState[row][col] = new HashMap<>();
             }
         }
         teamAPlayers.clear();
@@ -63,61 +66,116 @@ public class GameServer {
         teamBCount = 0;
         clients.clear();
         clientCounter = 0;
+        claimTimers.clear();
     }
 
     private static void broadcastGameState() throws IOException {
         synchronized (clients) {
             for (ClientHandler clientHandler : clients.values()) {
                 clientHandler.sendGameState(boardState);
-                clientHandler.sendHeldState(heldState);
-            }
-        }
-    }
-
-    private static void handleClaimRequest(ClientHandler client, int row, int col) throws IOException {
-        synchronized (boardState) {
-            if ("UNCLAIMED".equals(boardState[row][col]) && heldState[row][col] != null && heldState[row][col].equals(client.getTeam())) {
-                boardState[row][col] = client.getTeam();
-                heldState[row][col] = null;
-                broadcastGameState();
-                checkWinCondition(client);
-                broadcastTeamScores();
             }
         }
     }
 
     private static void handleHoldRequest(ClientHandler client, int row, int col) throws IOException {
         synchronized (boardState) {
-            if ("UNCLAIMED".equals(boardState[row][col]) && heldState[row][col] == null) {
-                heldState[row][col] = client.getTeam();
-                broadcastHoldInfo(row, col, client.getTeam());
-                broadcastGameState();
+            if ("UNCLAIMED".equals(boardState[row][col])) {
+                String team = client.getTeam();
+                Map<String, Integer> holdMap = heldState[row][col];
+                int newCount = holdMap.getOrDefault(team, 0) + 1;
+                holdMap.put(team, newCount);
+
+                if (newCount == 1) {
+                    broadcastHoldInfo(row, col, team);
+                    // Only schedule claim timer if one team is holding
+                    if (holdMap.size() == 1) {
+                        scheduleClaimTimer(row, col);
+                    } else if (holdMap.size() > 1) {
+                        // Cancel timer when both teams are holding - tug of war mode
+                        cancelClaimTimer(row, col);
+                    }
+                }
             }
         }
     }
 
     private static void handleReleaseRequest(ClientHandler client, int row, int col) throws IOException {
         synchronized (boardState) {
-            if (heldState[row][col] != null && heldState[row][col].equals(client.getTeam())) {
-                heldState[row][col] = null;
-                broadcastReleaseInfo(row, col);
-                broadcastGameState();
+            String team = client.getTeam();
+            Map<String, Integer> holdMap = heldState[row][col];
+            
+            if (holdMap.containsKey(team)) {
+                int count = holdMap.get(team);
+                if (count > 1) {
+                    holdMap.put(team, count - 1);
+                } else {
+                    holdMap.remove(team);
+                    broadcastReleaseInfo(row, col, team);
+                    
+                    // Check if this was a contested block (tug of war)
+                    if (holdMap.size() == 1) {
+                        // The remaining team wins the block immediately
+                        String winningTeam = holdMap.keySet().iterator().next();
+                        boardState[row][col] = winningTeam;
+                        heldState[row][col].clear();
+                        cancelClaimTimer(row, col);
+                        broadcastGameState();
+                        checkWinCondition(null);
+                        broadcastTeamScores();
+                    } else if (holdMap.size() == 0) {
+                        // No teams holding, do nothing
+                        cancelClaimTimer(row, col);
+                    } else {
+                        // This shouldn't happen, but handle it anyway
+                        cancelClaimTimer(row, col);
+                    }
+                }
             }
+        }
+    }
+
+    private static void scheduleClaimTimer(int row, int col) {
+        String key = row + "," + col;
+        ScheduledFuture<?> future = timerService.schedule(() -> {
+            synchronized (boardState) {
+                Map<String, Integer> holdMap = heldState[row][col];
+                if (holdMap.size() == 1) {
+                    String team = holdMap.keySet().iterator().next();
+                    boardState[row][col] = team;
+                    heldState[row][col].clear();
+                    try {
+                        broadcastGameState();
+                        checkWinCondition(null);
+                        broadcastTeamScores();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, 2, TimeUnit.SECONDS);
+        claimTimers.put(key, future);
+    }
+
+    private static void cancelClaimTimer(int row, int col) {
+        String key = row + "," + col;
+        ScheduledFuture<?> future = claimTimers.remove(key);
+        if (future != null) {
+            future.cancel(false);
         }
     }
 
     private static void broadcastHoldInfo(int row, int col, String team) {
         synchronized (clients) {
             for (ClientHandler clientHandler : clients.values()) {
-                clientHandler.sendMessage("HOLD_INFO " + row + " " + col + " " + team);
+                clientHandler.sendMessage("HOLD_START " + row + " " + col + " " + team);
             }
         }
     }
 
-    private static void broadcastReleaseInfo(int row, int col) {
+    private static void broadcastReleaseInfo(int row, int col, String team) {
         synchronized (clients) {
             for (ClientHandler clientHandler : clients.values()) {
-                clientHandler.sendMessage("RELEASE_INFO " + row + " " + col);
+                clientHandler.sendMessage("HOLD_END " + row + " " + col + " " + team);
             }
         }
     }
@@ -303,22 +361,18 @@ public class GameServer {
                             return;
                         }
                     }
-                    System.out.println(clientId + " (" + playerName + ") assigned to " + team + ". Team A: " + teamACount + ", Team B: " + teamBCount);
+                    System.out.println(clientId + " (" + playerName + ") assigned to " + team);
                     sendMessage("TEAM_ASSIGNMENT " + team + " " + playerName);
                     broadcastMessage("CHAT " + playerName + " connected");
                     broadcastTeamLists();
+                    sendGameState(boardState);
+                    sendInitialHeldState();
+                    broadcastTeamScores();
                 }
-
-                sendGameState(boardState);
-                broadcastTeamScores();
 
                 while (true) {
                     String message = inputStream.readUTF();
-                    if (message.startsWith("CLAIM_REQUEST")) {
-                        int row = Integer.parseInt(message.split(" ")[1]);
-                        int col = Integer.parseInt(message.split(" ")[2]);
-                        handleClaimRequest(this, row, col);
-                    } else if (message.startsWith("HOLD_START")) {
+                    if (message.startsWith("HOLD_START")) {
                         int row = Integer.parseInt(message.split(" ")[1]);
                         int col = Integer.parseInt(message.split(" ")[2]);
                         handleHoldRequest(this, row, col);
@@ -351,12 +405,10 @@ public class GameServer {
                             teamBCount--;
                             teamBPlayers.remove(playerName);
                         }
-                        System.out.println("Player " + playerName + " left team " + team + ". Team A: " + teamACount + ", Team B: " + teamBCount);
+                        System.out.println("Player " + playerName + " left team " + team);
                         broadcastMessage("CHAT " + playerName + " disconnected");
                         broadcastTeamLists();
                         broadcastTeamScores();
-                    } else {
-                        System.out.println(clientId + " disconnected before team assignment.");
                     }
                 }
             }
@@ -390,17 +442,22 @@ public class GameServer {
                     sb.append(gameState[row][col]).append(" ");
                 }
             }
-            sendMessage(sb.toString());
+            sendMessage(sb.toString().trim());
         }
 
-        public void sendHeldState(String[][] heldState) throws IOException {
-            StringBuilder sb = new StringBuilder("HELD_STATE ");
+        public void sendInitialHeldState() throws IOException {
+            StringBuilder sb = new StringBuilder("INITIAL_HELD_STATE ");
             for (int row = 0; row < GRID_SIZE; row++) {
                 for (int col = 0; col < GRID_SIZE; col++) {
-                    sb.append(heldState[row][col] == null ? "NONE" : heldState[row][col]).append(" ");
+                    Map<String, Integer> holdMap = heldState[row][col];
+                    if (holdMap.isEmpty()) {
+                        sb.append("NONE ");
+                    } else {
+                        sb.append(String.join(",", holdMap.keySet())).append(" ");
+                    }
                 }
             }
-            sendMessage(sb.toString());
+            sendMessage(sb.toString().trim());
         }
     }
 }
